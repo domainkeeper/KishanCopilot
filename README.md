@@ -25,8 +25,16 @@ Kishan Copilot is an AI-powered farming assistant that helps farmers with:
 ## Run Project
 
 ```bash
+# 1. Install dependencies
 pip install -r requirements.txt
+ 
+# 2. Set API keys
+export ANTHROPIC_API_KEY=sk-ant-...        # Required — all AI features
+export OPENWEATHER_API_KEY=your_key_here   # Optional — live weather (mock data used if absent)
+ 
+# 3. Run
 python app.py
+# → http://localhost:5000
 ```
 
 Open:
