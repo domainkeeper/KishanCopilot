@@ -1,141 +1,368 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Kishan Copilot</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kishan Copilot — AI for Indian Farmers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --soil: #2d1b0e;
+  --leaf: #3d7a3f;
+  --leaf-light: #5aad5c;
+  --sun: #f5c842;
+  --sky: #e8f4f0;
+  --clay: #c47c3e;
+  --cream: #faf7f0;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 2.5rem;
+  background: rgba(250,247,240,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(61,122,63,0.15);
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 1.3rem;
+  color: var(--leaf);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.nav-logo span { color: var(--soil); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  text-decoration: none; font-size: 0.9rem;
+  color: var(--muted); font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--leaf); }
+.nav-cta {
+  background: var(--leaf); color: white;
+  padding: 0.6rem 1.4rem; border-radius: 50px;
+  text-decoration: none; font-weight: 600; font-size: 0.9rem;
+  transition: background 0.2s, transform 0.1s;
+}
+.nav-cta:hover { background: var(--soil); transform: translateY(-1px); }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 8rem 4rem 4rem;
+  gap: 4rem;
+  background: linear-gradient(135deg, var(--cream) 60%, #d4ead6 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -20%; right: -10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(90,173,92,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 6s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(61,122,63,0.1); border: 1px solid rgba(61,122,63,0.3);
+  color: var(--leaf); padding: 0.4rem 1rem; border-radius: 50px;
+  font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem;
+  animation: fadeUp 0.6s ease both;
+}
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  font-weight: 800; line-height: 1.05;
+  color: var(--soil);
+  animation: fadeUp 0.7s 0.1s ease both;
+}
+.hero h1 em { color: var(--leaf); font-style: normal; }
+.hero p {
+  font-size: 1.1rem; color: var(--muted);
+  line-height: 1.7; margin: 1.5rem 0 2rem;
+  max-width: 500px;
+  animation: fadeUp 0.7s 0.2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+.btn-primary {
+  background: var(--leaf); color: white;
+  padding: 0.9rem 2rem; border-radius: 50px;
+  text-decoration: none; font-weight: 600;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.btn-primary:hover { background: var(--soil); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(45,27,14,0.2); }
+.btn-outline {
+  border: 2px solid var(--leaf); color: var(--leaf);
+  padding: 0.9rem 2rem; border-radius: 50px;
+  text-decoration: none; font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-outline:hover { background: var(--leaf); color: white; }
+
+.hero-stats {
+  display: flex; gap: 2rem; margin-top: 3rem;
+  animation: fadeUp 0.7s 0.4s ease both;
+}
+.stat { text-align: center; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--leaf); }
+.stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.hero-visual {
+  position: relative;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+.hero-card {
+  background: white;
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(45,27,14,0.12);
+  border: 1px solid rgba(61,122,63,0.1);
+}
+.hero-card-header {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+}
+.avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--leaf), var(--sun));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+.feature-list li {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 0.75rem 1rem; border-radius: 12px;
+  background: var(--sky); font-size: 0.9rem; font-weight: 500;
+  transition: transform 0.2s;
+}
+.feature-list li:hover { transform: translateX(4px); }
+.feature-list li .icon { font-size: 1.2rem; }
+
+.floating-tag {
+  position: absolute;
+  background: white; border-radius: 50px;
+  padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.floating-tag.t1 { top: -20px; right: 20px; color: var(--leaf); animation: float 3s ease-in-out infinite; }
+.floating-tag.t2 { bottom: -15px; left: 10px; color: var(--clay); animation: float 3s 1.5s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* FEATURES */
+.section {
+  padding: 6rem 4rem;
+}
+.section-tag {
+  display: inline-block; background: rgba(61,122,63,0.1);
+  color: var(--leaf); padding: 0.3rem 1rem; border-radius: 50px;
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800; color: var(--soil); line-height: 1.15;
+}
+.section-sub { color: var(--muted); font-size: 1.05rem; line-height: 1.7; max-width: 540px; margin-top: 0.75rem; }
+
+/* FEATURE GRID */
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem; margin-top: 3rem;
+}
+.feat-card {
+  background: white; border-radius: 20px;
+  padding: 2rem; border: 1px solid rgba(0,0,0,0.06);
+  transition: all 0.3s; cursor: default;
+  position: relative; overflow: hidden;
+}
+.feat-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(61,122,63,0.03));
+  opacity: 0; transition: opacity 0.3s;
+}
+.feat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(45,27,14,0.1); }
+.feat-card:hover::before { opacity: 1; }
+.feat-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin-bottom: 1.2rem;
+}
+.feat-icon.green { background: rgba(61,122,63,0.12); }
+.feat-icon.yellow { background: rgba(245,200,66,0.18); }
+.feat-icon.blue { background: rgba(59,130,246,0.1); }
+.feat-icon.orange { background: rgba(196,124,62,0.12); }
+.feat-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--soil); }
+.feat-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+/* DASHBOARD CTA */
+.cta-section {
+  background: linear-gradient(135deg, var(--soil) 0%, #4a2c14 100%);
+  color: white; padding: 6rem 4rem;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '🌾';
+  position: absolute; font-size: 15rem;
+  opacity: 0.05; top: -2rem; right: -2rem;
+  line-height: 1;
+}
+.cta-section h2 { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem; }
+.cta-section p { font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem; }
+.btn-sun {
+  background: var(--sun); color: var(--soil);
+  padding: 1rem 2.5rem; border-radius: 50px;
+  text-decoration: none; font-weight: 700; font-size: 1rem;
+  transition: all 0.2s; display: inline-block;
+}
+.btn-sun:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(245,200,66,0.4); }
+
+/* FOOTER */
+footer {
+  background: var(--soil); color: rgba(255,255,255,0.6);
+  padding: 3rem 4rem;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+}
+footer .logo { font-family: 'Syne', sans-serif; font-weight: 800; color: white; font-size: 1.2rem; }
+footer p { font-size: 0.85rem; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+  .hero-visual { display: none; }
+  .section { padding: 4rem 1.5rem; }
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  footer { flex-direction: column; padding: 2rem 1.5rem; }
+  .cta-section { padding: 4rem 1.5rem; }
+}
+</style>
 </head>
 <body>
 
+<nav>
+  <div class="nav-logo">🌿 Kishan<span>Copilot</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
+  </ul>
+  <a href="/dashboard" class="nav-cta">Open App →</a>
+</nav>
+
 <section class="hero">
-
-    <div class="hero-text">
-        <h1>Kishan Copilot</h1>
-
-        <p>
-            Smart AI farming assistant helping farmers with
-            weather forecasts, crop recommendations,
-            market insights, and multilingual voice support.
-        </p>
-
-        <button>Explore Features</button>
+  <div class="hero-content">
+    <h1>AI Copilot for<br>Every <em>Indian Farmer</em></h1>
+    <p>Real-time crop guidance, disease diagnosis, market prices, and multilingual voice support — all powered by AI. Designed for the fields of Bharat.</p>
+    <div class="hero-actions">
+      <a href="/dashboard" class="btn-primary">🌾 Open Dashboard</a>
+      <a href="#features" class="btn-outline">Learn More</a>
     </div>
-
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">4+</div><div class="stat-label">AI Features</div></div>
+      <div class="stat"><div class="stat-num">10+</div><div class="stat-label">Languages</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Crop Support</div></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-tag t1">🌡️ 32°C · Partly Cloudy</div>
+    <div class="hero-card">
+      <div class="hero-card-header">
+        <div class="avatar">🤖</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700">Kishan Copilot</div>
+          <div style="font-size:0.8rem;color:var(--muted)">AI Farm Assistant · Online</div>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li><span class="icon">🌱</span> Crop Advisory Engine</li>
+        <li><span class="icon">🔬</span> Disease Diagnosis via Photo</li>
+        <li><span class="icon">📊</span> Live Market Prices</li>
+        <li><span class="icon">🎙️</span> Voice Chatbot (Hindi/English)</li>
+        <li><span class="icon">🏛️</span> Govt Scheme Finder</li>
+      </ul>
+    </div>
+    <div class="floating-tag t2">📈 Wheat ₹2,275/qtl ↑</div>
+  </div>
 </section>
 
-    <div class="card">
-        <h2><i class="fa-solid fa-cloud"></i> Weather Report</h2>
-        <div class="weather-grid">
-
-<div class="weather-box">
-<h3>Temperature</h3>
-<p>34°C</p>
-</div>
-
-<div class="weather-box">
-<h3>Humidity</h3>
-<p>60%</p>
-</div>
-
-<div class="weather-box">
-<h3>Rainfall</h3>
-<p>20%</p>
-</div>
-
-</div>
+<section class="section" id="features">
+  <div class="section-tag">What We Offer</div>
+  <h2 class="section-title">Everything a Farmer Needs,<br>Powered by AI</h2>
+  <p class="section-sub">From sowing to selling — Kishan Copilot guides you at every step with data-backed intelligence.</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon green">🌱</div>
+      <h3>Intelligent Crop Advisory</h3>
+      <p>Enter your soil type, location, and season. Get AI-recommended crops with fertilizer and irrigation schedules tailored to your farm.</p>
     </div>
-
-    <div class="card">
-        <h2><i class="fa-solid fa-seedling"></i> Crop Advisory</h2>
-        <p>Recommended Crop: Wheat</p>
-        <p>Best Sowing Month: November</p>
+    <div class="feat-card">
+      <div class="feat-icon yellow">🔬</div>
+      <h3>Disease Diagnosis</h3>
+      <p>Upload a photo of your crop. Our vision AI identifies diseases, pests, and deficiencies instantly with treatment recommendations.</p>
     </div>
-
-    <div class="card">
-        <h2><i class="fa-solid fa-bug"></i> Disease Detection</h2>
-        <p>Leaf appears healthy.</p>
+    <div class="feat-card">
+      <div class="feat-icon blue">☁️</div>
+      <h3>Hyper-local Weather</h3>
+      <p>Real-time weather data with AI-generated farming advice — know when to irrigate, spray, or harvest based on your local conditions.</p>
     </div>
+    <div class="feat-card">
+      <div class="feat-icon orange">📊</div>
+      <h3>Mandi Market Prices</h3>
+      <p>Get current minimum support prices, mandi rates, and price trend analysis to sell at the right time and right place.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon green">🎙️</div>
+      <h3>Voice Chatbot</h3>
+      <p>Talk to Kishan Copilot in Hindi or English. Ask anything about farming and get expert answers in simple language.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon yellow">🏛️</div>
+      <h3>Government Schemes</h3>
+      <p>Discover PM-KISAN, Kisan Credit Card, crop insurance, and other schemes you're eligible for — with direct application links.</p>
+    </div>
+  </div>
+</section>
 
-    <div class="card">
+<section class="cta-section">
+  <h2>Start Farming Smarter Today</h2>
+  <p>Join the AI revolution in Indian agriculture. Free to use, always accessible.</p>
+  <a href="/dashboard" class="btn-sun">Open Kishan Copilot →</a>
+</section>
 
-<h2>Crop Recommendation</h2>
-
-<select id="cropSelect" onchange="changeCrop()">
-    <option>Wheat</option>
-    <option>Rice</option>
-    <option>Sugarcane</option>
-</select>
-
-<p id="cropInfo">
-    Best sowing season: November
-</p>
-
-</div>
-
-<div class="card">
-
-<h2>Disease Detection</h2>
-
-<input type="file">
-
-<button onclick="predictDisease()">
-Check Disease
-</button>
-
-<p id="result"></p>
-
-</div>
-
-
-
-
-    <button onclick="voice()">Voice Assistant</button>
-    <footer>
-
-<p>
-Kishan Copilot © 2026 |
-Built for CyphersNova Hackathon
-</p>
-
+<footer>
+  <div class="logo">🌿 KishanCopilot</div>
+  <p>Built by Team StrawHats — Mayank Mishra & Pratham Kaushik · ABES Engineering College</p>
+  <p>CyphersNova Innovator's Hackathon '26</p>
 </footer>
-
-    <script>
-
-        function predictDisease() {
-
-document.getElementById("result")
-.innerHTML =
-"Possible Leaf Blight detected. Recommended treatment: Organic fungicide.";
-
-}
-
-function changeCrop() {
-
-    let crop =
-    document.getElementById("cropSelect").value;
-
-    let info =
-    document.getElementById("cropInfo");
-
-    if(crop === "Wheat") {
-        info.innerHTML =
-        "Best sowing season: November";
-    }
-
-    else if(crop === "Rice") {
-        info.innerHTML =
-        "Requires high rainfall and warm climate.";
-    }
-
-    else {
-        info.innerHTML =
-        "Suitable for tropical regions.";
-    }
-}
-        function voice() {
-            alert("Voice Assistant Coming Soon");
-        }
-    </script>
 
 </body>
 </html>

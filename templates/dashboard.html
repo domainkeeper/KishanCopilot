@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Kishan Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --soil: #2d1b0e; --leaf: #3d7a3f; --leaf-light: #5aad5c;
+  --sun: #f5c842; --sky: #e8f4f0; --clay: #c47c3e;
+  --cream: #faf7f0; --text: #1a1a1a; --muted: #6b6b6b;
+  --white: #ffffff; --border: rgba(0,0,0,0.07);
+  --sidebar-w: 260px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #f0f3f0; color: var(--text); display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w); min-height: 100vh;
+  background: var(--soil); position: fixed; left: 0; top: 0;
+  display: flex; flex-direction: column;
+  z-index: 10;
+}
+.sidebar-logo {
+  padding: 1.8rem 1.5rem 1rem;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.25rem; color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.sidebar-nav { padding: 1rem 0.75rem; flex: 1; }
+.nav-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: 12px;
+  cursor: pointer; margin-bottom: 0.25rem;
+  color: rgba(255,255,255,0.6); font-weight: 500; font-size: 0.92rem;
+  transition: all 0.2s; border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+.nav-item.active { background: var(--leaf); color: white; }
+.nav-item .icon { font-size: 1.2rem; width: 24px; text-align: center; }
+.sidebar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.75rem; color: rgba(255,255,255,0.4);
+}
+.sidebar-footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+.topbar {
+  background: white; padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 5;
+}
+.topbar h1 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--soil); }
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.lang-toggle {
+  display: flex; background: #f0f0f0; border-radius: 50px; padding: 3px;
+}
+.lang-btn {
+  padding: 0.3rem 0.8rem; border-radius: 50px; border: none;
+  cursor: pointer; font-size: 0.8rem; font-weight: 600;
+  background: transparent; color: var(--muted); transition: all 0.2s;
+}
+.lang-btn.active { background: var(--leaf); color: white; }
+.home-link {
+  color: var(--muted); text-decoration: none; font-size: 0.85rem;
+  display: flex; align-items: center; gap: 0.3rem;
+}
+
+/* CONTENT */
+.content { padding: 2rem; flex: 1; }
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* CARDS */
+.card {
+  background: white; border-radius: 20px; padding: 2rem;
+  border: 1px solid var(--border); margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.card-title {
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
+  color: var(--soil); margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* FORM ELEMENTS */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em; }
+input, select, textarea {
+  width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
+  border: 1.5px solid #e0e0e0; font-family: inherit; font-size: 0.93rem;
+  background: #fafafa; color: var(--text); transition: border 0.2s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--leaf); background: white; }
+textarea { resize: vertical; min-height: 80px; }
+
+.btn {
+  padding: 0.75rem 1.8rem; border-radius: 50px; border: none;
+  cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.92rem;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.btn-green { background: var(--leaf); color: white; }
+.btn-green:hover { background: var(--soil); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,122,63,0.3); }
+.btn-green:disabled { background: #ccc; transform: none; box-shadow: none; cursor: not-allowed; }
+
+/* RESULT AREAS */
+.result-box {
+  background: var(--sky); border-radius: 14px; padding: 1.5rem;
+  margin-top: 1.2rem; border: 1px solid rgba(61,122,63,0.15);
+  display: none;
+}
+.result-box.show { display: block; animation: fadeIn 0.3s ease; }
+.result-box h4 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.75rem; color: var(--leaf); }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.result-chip {
+  background: white; border-radius: 12px; padding: 1rem;
+  border: 1px solid rgba(61,122,63,0.15);
+}
+.result-chip .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.2rem; }
+.result-chip .val { font-weight: 600; font-size: 1rem; color: var(--soil); }
+.tag { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin: 0.2rem; }
+.tag-green { background: rgba(61,122,63,0.12); color: var(--leaf); }
+.tag-red { background: rgba(220,50,50,0.1); color: #c33; }
+.tag-yellow { background: rgba(245,200,66,0.2); color: #8a6e00; }
+.tag-blue { background: rgba(59,130,246,0.12); color: #2563eb; }
+
+/* CHAT */
+.chat-container { height: 420px; display: flex; flex-direction: column; }
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 1rem;
+  background: #f8f9f8; border-radius: 12px; margin-bottom: 1rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+.chat-msg { max-width: 80%; padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.92rem; line-height: 1.5; }
+.chat-msg.user { background: var(--leaf); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-msg.bot { background: white; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border); }
+.chat-msg.bot.typing { opacity: 0.6; font-style: italic; }
+.chat-input-row { display: flex; gap: 0.75rem; }
+.chat-input-row input { border-radius: 50px; }
+.btn-voice {
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: var(--sky); cursor: pointer; font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.btn-voice:hover { background: var(--leaf); }
+.btn-voice.listening { background: #ff4444; animation: breathe 1s infinite; }
+@keyframes breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+/* WEATHER WIDGET */
+.weather-widget {
+  display: grid; grid-template-columns: auto 1fr; gap: 1.5rem;
+  align-items: center; background: linear-gradient(135deg, #4a90d9 0%, #2d6ba8 100%);
+  border-radius: 18px; padding: 1.5rem; color: white; margin-bottom: 1.2rem;
+}
+.weather-icon { font-size: 3.5rem; }
+.weather-temp { font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800; }
+.weather-info { font-size: 0.85rem; opacity: 0.85; margin-top: 0.25rem; }
+
+/* SCHEMES GRID */
+.schemes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.scheme-card {
+  background: white; border-radius: 16px; padding: 1.25rem;
+  border: 1px solid var(--border); transition: all 0.2s;
+}
+.scheme-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.scheme-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--soil); }
+.scheme-ministry { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.6rem; }
+.scheme-benefit { font-size: 0.88rem; line-height: 1.5; color: #444; }
+
+/* UPLOAD AREA */
+.upload-area {
+  border: 2px dashed #c8d8c8; border-radius: 16px; padding: 2.5rem;
+  text-align: center; cursor: pointer; transition: all 0.2s;
+  background: #f8fbf8;
+}
+.upload-area:hover, .upload-area.dragover { border-color: var(--leaf); background: rgba(61,122,63,0.05); }
+.upload-area img { max-height: 200px; border-radius: 12px; margin-top: 1rem; }
+#fileInput { display: none; }
+
+/* OVERVIEW STATS */
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card {
+  background: white; border-radius: 16px; padding: 1.25rem;
+  border: 1px solid var(--border); display: flex; align-items: center; gap: 1rem;
+}
+.stat-icon { font-size: 2rem; }
+.stat-val { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--soil); }
+.stat-lbl { font-size: 0.78rem; color: var(--muted); }
+
+/* SPINNER */
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MARKET */
+.market-search { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.price-display {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;
+}
+.price-box {
+  background: white; border-radius: 14px; padding: 1.2rem;
+  text-align: center; border: 1px solid var(--border);
+}
+.price-box .p-label { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+.price-box .p-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--leaf); }
+.price-box .p-sub { font-size: 0.75rem; color: var(--muted); }
+
+@media (max-width: 768px) {
+  .sidebar { width: 220px; }
+  .main { margin-left: 0; }
+  .sidebar { display: none; }
+  .content { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 KishanCopilot</div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showPanel('overview', this)">
+      <span class="icon">🏠</span> Overview
+    </button>
+    <button class="nav-item" onclick="showPanel('crop', this)">
+      <span class="icon">🌱</span> Crop Advisory
+    </button>
+    <button class="nav-item" onclick="showPanel('disease', this)">
+      <span class="icon">🔬</span> Disease Diagnosis
+    </button>
+    <button class="nav-item" onclick="showPanel('weather', this)">
+      <span class="icon">☁️</span> Weather
+    </button>
+    <button class="nav-item" onclick="showPanel('market', this)">
+      <span class="icon">📊</span> Market Prices
+    </button>
+    <button class="nav-item" onclick="showPanel('chat', this)">
+      <span class="icon">🎙️</span> AI Chatbot
+    </button>
+    <button class="nav-item" onclick="showPanel('schemes', this)">
+      <span class="icon">🏛️</span> Govt Schemes
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    Team StrawHats · ABES Engineering<br>
+    <a href="/">← Back to Home</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <h1 id="panel-title">Overview</h1>
+    <div class="topbar-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('hi',this)">हि</button>
+      </div>
+      <a href="/" class="home-link">🏠 Home</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div id="panel-overview" class="panel active">
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-icon">🌾</div><div><div class="stat-val">Ready</div><div class="stat-lbl">Crop Advisory</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🔬</div><div><div class="stat-val">Active</div><div class="stat-lbl">Disease AI</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📡</div><div><div class="stat-val">Live</div><div class="stat-lbl">Weather Data</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💬</div><div><div class="stat-val">Online</div><div class="stat-lbl">AI Chatbot</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🚀 Welcome to Kishan Copilot</div>
+        <p style="color:var(--muted);line-height:1.7;margin-bottom:1rem">Your AI-powered farming assistant. Use the sidebar to access all features:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem">
+          <div style="background:var(--sky);border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('crop', document.querySelectorAll('.nav-item')[1])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">🌱</div>
+            <div style="font-weight:700;font-size:0.95rem">Crop Advisory</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Get crop recommendations for your farm</div>
+          </div>
+          <div style="background:#fff8e8;border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('disease', document.querySelectorAll('.nav-item')[2])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">🔬</div>
+            <div style="font-weight:700;font-size:0.95rem">Disease Diagnosis</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Upload a photo to identify crop diseases</div>
+          </div>
+          <div style="background:#e8f0ff;border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('weather', document.querySelectorAll('.nav-item')[3])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">☁️</div>
+            <div style="font-weight:700;font-size:0.95rem">Weather</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Hyper-local weather + farming advice</div>
+          </div>
+          <div style="background:#fff0e8;border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('market', document.querySelectorAll('.nav-item')[4])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">📊</div>
+            <div style="font-weight:700;font-size:0.95rem">Market Prices</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Live mandi rates for your crops</div>
+          </div>
+          <div style="background:#f0ffe8;border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('chat', document.querySelectorAll('.nav-item')[5])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">🎙️</div>
+            <div style="font-weight:700;font-size:0.95rem">AI Chatbot</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Ask anything in Hindi or English</div>
+          </div>
+          <div style="background:#f8f0ff;border-radius:12px;padding:1rem;cursor:pointer" onclick="showPanel('schemes', document.querySelectorAll('.nav-item')[6])">
+            <div style="font-size:1.5rem;margin-bottom:0.4rem">🏛️</div>
+            <div style="font-weight:700;font-size:0.95rem">Govt Schemes</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.2rem">Find schemes you're eligible for</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROP ADVISORY -->
+    <div id="panel-crop" class="panel">
+      <div class="card">
+        <div class="card-title">🌱 Crop Advisory Engine</div>
+        <div class="form-grid">
+          <div><label>Location / District</label><input id="c-location" type="text" placeholder="e.g. Varanasi, UP"></div>
+          <div><label>Soil Type</label>
+            <select id="c-soil">
+              <option>Loamy</option><option>Sandy</option><option>Clay</option>
+              <option>Black (Regur)</option><option>Red</option><option>Alluvial</option>
+            </select>
+          </div>
+          <div><label>Season</label>
+            <select id="c-season">
+              <option>Kharif (June–Nov)</option><option>Rabi (Nov–Apr)</option><option>Zaid (Mar–Jun)</option>
+            </select>
+          </div>
+          <div><label>Farm Size (acres)</label><input id="c-size" type="number" placeholder="e.g. 2.5"></div>
+          <div><label>Previous Crop</label><input id="c-prev" type="text" placeholder="e.g. Rice"></div>
+        </div>
+        <button class="btn btn-green" style="margin-top:1.2rem" onclick="getCropAdvisory()" id="crop-btn">
+          Get Crop Advisory
+        </button>
+        <div id="crop-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- DISEASE -->
+    <div id="panel-disease" class="panel">
+      <div class="card">
+        <div class="card-title">🔬 AI Disease Diagnosis</div>
+        <div>
+          <label>Crop Name</label>
+          <input id="d-crop" type="text" placeholder="e.g. Wheat, Rice, Tomato" style="max-width:300px;margin-bottom:1rem">
+        </div>
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()" id="uploadArea"
+             ondragover="event.preventDefault();this.classList.add('dragover')"
+             ondrop="handleDrop(event)">
+          <div style="font-size:3rem">📷</div>
+          <div style="font-weight:600;margin:0.5rem 0">Click to upload crop photo</div>
+          <div style="font-size:0.85rem;color:var(--muted)">JPG, PNG up to 10MB · Drag & drop supported</div>
+          <img id="preview-img" style="display:none">
+        </div>
+        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(this)">
+        <button class="btn btn-green" style="margin-top:1rem" onclick="diagnoseCrop()" id="diag-btn">
+          🔍 Diagnose Now
+        </button>
+        <div id="disease-result" class="result-box"></div>
+      </div>
+    </div>
+
+    <!-- WEATHER -->
+    <div id="panel-weather" class="panel">
+      <div class="card">
+        <div class="card-title">☁️ Weather & Farming Advice</div>
+        <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap">
+          <input id="w-city" type="text" placeholder="Enter city name..." style="max-width:280px">
+          <button class="btn btn-green" onclick="getWeather()" id="weather-btn">Get Weather</button>
+        </div>
+        <div id="weather-result"></div>
+      </div>
+    </div>
+
+    <!-- MARKET -->
+    <div id="panel-market" class="panel">
+      <div class="card">
+        <div class="card-title">📊 Mandi Market Prices</div>
+        <div class="market-search">
+          <div>
+            <label>Crop</label>
+            <select id="m-crop">
+              <option value="wheat">Wheat (Gehun)</option>
+              <option value="rice">Rice (Dhan)</option>
+              <option value="maize">Maize (Makka)</option>
+              <option value="sugarcane">Sugarcane (Ganna)</option>
+              <option value="cotton">Cotton (Kapas)</option>
+              <option value="soybean">Soybean</option>
+              <option value="mustard">Mustard (Sarson)</option>
+              <option value="onion">Onion (Pyaz)</option>
+              <option value="potato">Potato (Aloo)</option>
+              <option value="tomato">Tomato</option>
+            </select>
+          </div>
+          <div>
+            <label>State</label>
+            <select id="m-state">
+              <option>Uttar Pradesh</option><option>Punjab</option><option>Haryana</option>
+              <option>Maharashtra</option><option>Madhya Pradesh</option><option>Rajasthan</option>
+              <option>Gujarat</option><option>West Bengal</option><option>Bihar</option>
+              <option>Andhra Pradesh</option>
+            </select>
+          </div>
+          <div style="align-self:flex-end">
+            <button class="btn btn-green" onclick="getMarketPrices()" id="market-btn">Get Prices</button>
+          </div>
+        </div>
+        <div id="market-result"></div>
+      </div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div id="panel-chat" class="panel">
+      <div class="card">
+        <div class="card-title">🎙️ Kishan AI Chatbot</div>
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg bot">🙏 Namaste! I'm Kishan Copilot. Ask me anything about farming — crop selection, disease treatment, government schemes, weather, or market prices!</div>
+          </div>
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" placeholder="Ask anything about farming..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn-voice" id="voiceBtn" onclick="toggleVoice()" title="Voice input">🎤</button>
+            <button class="btn btn-green" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+          <span style="font-size:0.8rem;color:var(--muted);margin-right:0.3rem">Try:</span>
+          <button class="tag tag-green" style="cursor:pointer;border:none" onclick="quickAsk('Best crops for black soil in Kharif season?')">Kharif crops for black soil</button>
+          <button class="tag tag-green" style="cursor:pointer;border:none" onclick="quickAsk('How to apply for PM-KISAN scheme?')">PM-KISAN apply kaise karein?</button>
+          <button class="tag tag-green" style="cursor:pointer;border:none" onclick="quickAsk('My wheat has yellow leaves, what is the problem?')">Wheat yellow leaves problem</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEMES -->
+    <div id="panel-schemes" class="panel">
+      <div class="card">
+        <div class="card-title">🏛️ Government Schemes for Farmers</div>
+        <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:flex-end">
+          <div>
+            <label>Filter by Category</label>
+            <select id="s-cat">
+              <option value="all">All Schemes</option>
+              <option value="income support">Income Support</option>
+              <option value="crop insurance">Crop Insurance</option>
+              <option value="credit and loans">Credit & Loans</option>
+              <option value="irrigation">Irrigation</option>
+              <option value="soil health">Soil Health</option>
+            </select>
+          </div>
+          <button class="btn btn-green" onclick="getSchemes()" id="schemes-btn">Find Schemes</button>
+        </div>
+        <div id="schemes-result"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+let currentLang = 'en';
+let chatHistory = [];
+let recognition = null;
+
+// ── NAV ──────────────────────────────────────────────────────
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  const titles = {
+    overview:'Overview', crop:'Crop Advisory', disease:'Disease Diagnosis',
+    weather:'Weather', market:'Market Prices', chat:'AI Chatbot', schemes:'Govt Schemes'
+  };
+  document.getElementById('panel-title').textContent = titles[name];
+}
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Loading...';
+  } else {
+    btn.disabled = false;
+  }
+}
+
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, opts);
+  return res.json();
+}
+
+// ── CROP ADVISORY ─────────────────────────────────────────────
+async function getCropAdvisory() {
+  setLoading('crop-btn', true);
+  const body = {
+    location: document.getElementById('c-location').value || 'India',
+    soil_type: document.getElementById('c-soil').value,
+    season: document.getElementById('c-season').value,
+    farm_size: document.getElementById('c-size').value || '2',
+    prev_crop: document.getElementById('c-prev').value || 'None'
+  };
+  const res = await apiFetch('/api/crop-advisory', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+  });
+  document.getElementById('crop-btn').disabled = false;
+  document.getElementById('crop-btn').innerHTML = 'Get Crop Advisory';
+  const box = document.getElementById('crop-result');
+  if (res.success && res.data && !res.data.raw) {
+    const d = res.data;
+    box.innerHTML = `<h4>🌱 Recommended Crops</h4>
+      <div class="result-grid">
+        ${(d.crops||[]).map(c => `<div class="result-chip"><div class="label">${c.name}</div><div class="val" style="font-size:0.85rem">${c.reason}</div><div style="font-size:0.78rem;color:var(--leaf);margin-top:0.3rem">Est: ${c.yield_estimate}</div></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px"><h4 style="font-size:0.9rem;margin-bottom:0.4rem">📅 Sowing Schedule</h4><p style="font-size:0.88rem;color:#444">${d.sowing_schedule||'-'}</p></div>
+        <div style="flex:1;min-width:200px"><h4 style="font-size:0.9rem;margin-bottom:0.4rem">💧 Irrigation</h4><p style="font-size:0.88rem;color:#444">${d.irrigation||'-'}</p></div>
+      </div>
+      ${d.fertilizer ? `<div style="margin-top:1rem"><h4 style="font-size:0.9rem;margin-bottom:0.4rem">🧪 Fertilizer (NPK)</h4>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <span class="tag tag-blue">N: ${d.fertilizer.N}</span>
+          <span class="tag tag-green">P: ${d.fertilizer.P}</span>
+          <span class="tag tag-yellow">K: ${d.fertilizer.K}</span>
+        </div>
+        <p style="font-size:0.82rem;color:var(--muted);margin-top:0.4rem">${d.fertilizer.notes||''}</p>
+      </div>` : ''}
+      ${d.tips && d.tips.length ? `<div style="margin-top:1rem"><h4 style="font-size:0.9rem;margin-bottom:0.4rem">💡 Tips</h4>${d.tips.map(t=>`<p style="font-size:0.85rem;padding:0.3rem 0;border-bottom:1px solid rgba(0,0,0,0.05)">• ${t}</p>`).join('')}</div>` : ''}`;
+  } else {
+    box.innerHTML = `<h4>Result</h4><pre style="white-space:pre-wrap;font-size:0.85rem;font-family:inherit">${res.data?.raw || JSON.stringify(res, null, 2)}</pre>`;
+  }
+  box.classList.add('show');
+}
+
+// ── DISEASE ───────────────────────────────────────────────────
+function previewImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('preview-img');
+    img.src = e.target.result; img.style.display = 'block';
+    document.querySelector('.upload-area div').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) { document.getElementById('fileInput').files = e.dataTransfer.files; previewImage(document.getElementById('fileInput')); }
+  document.getElementById('uploadArea').classList.remove('dragover');
+}
+
+async function diagnoseCrop() {
+  const fileInput = document.getElementById('fileInput');
+  if (!fileInput.files[0]) { alert('Please upload a crop image first.'); return; }
+  setLoading('diag-btn', true);
+  const formData = new FormData();
+  formData.append('image', fileInput.files[0]);
+  formData.append('crop_name', document.getElementById('d-crop').value || 'unknown');
+  const res = await apiFetch('/api/disease-diagnosis', { method: 'POST', body: formData });
+  document.getElementById('diag-btn').disabled = false;
+  document.getElementById('diag-btn').innerHTML = '🔍 Diagnose Now';
+  const box = document.getElementById('disease-result');
+  if (res.success && res.data && !res.data.raw) {
+    const d = res.data;
+    const sevColor = {mild:'tag-green', moderate:'tag-yellow', severe:'tag-red'}[d.severity] || 'tag-yellow';
+    const urgColor = {immediate:'tag-red', within_week:'tag-yellow', monitor:'tag-green'}[d.urgency] || 'tag-yellow';
+    box.innerHTML = `<h4>🔬 Diagnosis Result</h4>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem">
+        <span class="tag tag-blue">${d.disease_name||'Unknown'}</span>
+        <span class="tag ${sevColor}">Severity: ${d.severity||'N/A'}</span>
+        <span class="tag ${urgColor}">Urgency: ${(d.urgency||'').replace('_',' ')}</span>
+        <span class="tag tag-green">Confidence: ${d.confidence||'N/A'}</span>
+      </div>
+      <p style="font-size:0.88rem;margin-bottom:0.8rem"><strong>Cause:</strong> ${d.cause||'-'}</p>
+      ${d.symptoms?.length ? `<div style="margin-bottom:0.8rem"><strong style="font-size:0.88rem">Symptoms:</strong> ${d.symptoms.map(s=>`<span class="tag tag-yellow">${s}</span>`).join('')}</div>` : ''}
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:0.5rem">
+        ${d.treatment?.organic?.length ? `<div><h4 style="font-size:0.88rem;margin-bottom:0.4rem">🌿 Organic Treatment</h4>${d.treatment.organic.map(t=>`<p style="font-size:0.82rem;padding:0.25rem 0">• ${t}</p>`).join('')}</div>` : ''}
+        ${d.treatment?.chemical?.length ? `<div><h4 style="font-size:0.88rem;margin-bottom:0.4rem">🧪 Chemical Treatment</h4>${d.treatment.chemical.map(t=>`<p style="font-size:0.82rem;padding:0.25rem 0">• ${t}</p>`).join('')}</div>` : ''}
+        ${d.treatment?.preventive?.length ? `<div><h4 style="font-size:0.88rem;margin-bottom:0.4rem">🛡️ Prevention</h4>${d.treatment.preventive.map(t=>`<p style="font-size:0.82rem;padding:0.25rem 0">• ${t}</p>`).join('')}</div>` : ''}
+      </div>`;
+  } else {
+    box.innerHTML = `<h4>Result</h4><pre style="white-space:pre-wrap;font-size:0.85rem">${res.data?.raw || 'No result'}</pre>`;
+  }
+  box.classList.add('show');
+}
+
+// ── WEATHER ───────────────────────────────────────────────────
+async function getWeather() {
+  const city = document.getElementById('w-city').value || 'Delhi';
+  setLoading('weather-btn', true);
+  const res = await apiFetch(`/api/weather?city=${encodeURIComponent(city)}`);
+  document.getElementById('weather-btn').disabled = false;
+  document.getElementById('weather-btn').innerHTML = 'Get Weather';
+  const d = res.data;
+  const icons = {'partly cloudy':'⛅','clear sky':'☀️','sunny':'☀️','cloudy':'☁️','rain':'🌧️','thunder':'⛈️','mist':'🌫️','haze':'🌫️','fog':'🌫️'};
+  const weatherIcon = Object.entries(icons).find(([k]) => d.description?.toLowerCase().includes(k))?.[1] || '🌤️';
+  document.getElementById('weather-result').innerHTML = `
+    <div class="weather-widget">
+      <div class="weather-icon">${weatherIcon}</div>
+      <div>
+        <div class="weather-temp">${d.temp}°C</div>
+        <div class="weather-info">${d.description} · Feels like ${d.feels_like}°C</div>
+        <div class="weather-info" style="margin-top:0.3rem">💧 Humidity: ${d.humidity}% &nbsp;💨 Wind: ${d.wind_speed} km/h &nbsp;🌧️ Rain: ${d.rain_probability}</div>
+      </div>
+    </div>
+    <div style="background:rgba(61,122,63,0.1);border-radius:12px;padding:1rem;border-left:4px solid var(--leaf)">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--leaf);margin-bottom:0.3rem">🌾 FARMING ADVICE</div>
+      <p style="font-size:0.9rem;line-height:1.6">${d.farming_advice}</p>
+    </div>`;
+}
+
+// ── MARKET ────────────────────────────────────────────────────
+async function getMarketPrices() {
+  const crop = document.getElementById('m-crop').value;
+  const state = document.getElementById('m-state').value;
+  setLoading('market-btn', true);
+  const res = await apiFetch(`/api/market-prices?crop=${encodeURIComponent(crop)}&state=${encodeURIComponent(state)}`);
+  document.getElementById('market-btn').disabled = false;
+  document.getElementById('market-btn').innerHTML = 'Get Prices';
+  const box = document.getElementById('market-result');
+  if (res.success && res.data && !res.data.raw) {
+    const d = res.data;
+    const trendIcon = {rising:'📈', falling:'📉', stable:'➡️'}[d.trend] || '➡️';
+    box.innerHTML = `<div class="price-display">
+      <div class="price-box"><div class="p-label">Min Price</div><div class="p-val">₹${d.min_price}</div><div class="p-sub">${d.unit}</div></div>
+      <div class="price-box"><div class="p-label">Modal Price</div><div class="p-val" style="color:var(--soil)">₹${d.modal_price}</div><div class="p-sub">${d.unit}</div></div>
+      <div class="price-box"><div class="p-label">Max Price</div><div class="p-val" style="color:var(--clay)">₹${d.max_price}</div><div class="p-sub">${d.unit}</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem">
+      <span style="font-weight:600">Trend: </span><span class="tag ${d.trend==='rising'?'tag-green':d.trend==='falling'?'tag-red':'tag-yellow'}">${trendIcon} ${d.trend}</span>
+    </div>
+    ${d.best_mandis?.length ? `<div style="margin-bottom:1rem"><strong style="font-size:0.88rem">Best Mandis:</strong> ${d.best_mandis.map(m=>`<span class="tag tag-blue">${m.name}: ₹${m.price}</span>`).join('')}</div>` : ''}
+    <div style="background:rgba(61,122,63,0.08);border-radius:12px;padding:1rem;border-left:4px solid var(--leaf)">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--leaf);margin-bottom:0.3rem">💡 SELLING ADVICE</div>
+      <p style="font-size:0.88rem;line-height:1.6">${d.advice}</p>
+    </div>`;
+  } else {
+    box.innerHTML = `<pre style="white-space:pre-wrap;font-size:0.85rem">${res.data?.raw||'No data'}</pre>`;
+  }
+}
+
+// ── CHAT ──────────────────────────────────────────────────────
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendMsg(msg, 'user');
+  chatHistory.push({role: 'user', content: msg});
+  const typingDiv = appendMsg('...', 'bot typing');
+  const res = await apiFetch('/api/chat', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({message: msg, history: chatHistory.slice(-8), lang: currentLang})
+  });
+  typingDiv.remove();
+  const reply = res.reply || 'Sorry, I could not process that request.';
+  appendMsg(reply, 'bot');
+  chatHistory.push({role: 'assistant', content: reply});
+}
+
+function appendMsg(text, type) {
+  const box = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + type;
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+function quickAsk(q) {
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+
+// ── VOICE ─────────────────────────────────────────────────────
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice recognition not supported in this browser.'); return;
+  }
+  const btn = document.getElementById('voiceBtn');
+  if (recognition) { recognition.stop(); recognition = null; btn.classList.remove('listening'); btn.textContent = '🎤'; return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = currentLang === 'hi' ? 'hi-IN' : 'en-IN';
+  recognition.continuous = false;
+  recognition.onstart = () => { btn.classList.add('listening'); btn.textContent = '🔴'; };
+  recognition.onresult = e => {
+    document.getElementById('chatInput').value = e.results[0][0].transcript;
+    btn.classList.remove('listening'); btn.textContent = '🎤'; recognition = null;
+    sendChat();
+  };
+  recognition.onerror = recognition.onend = () => { btn.classList.remove('listening'); btn.textContent = '🎤'; recognition = null; };
+  recognition.start();
+}
+
+// ── SCHEMES ───────────────────────────────────────────────────
+async function getSchemes() {
+  setLoading('schemes-btn', true);
+  const cat = document.getElementById('s-cat').value;
+  const res = await apiFetch(`/api/schemes?category=${encodeURIComponent(cat)}`);
+  document.getElementById('schemes-btn').disabled = false;
+  document.getElementById('schemes-btn').innerHTML = 'Find Schemes';
+  const box = document.getElementById('schemes-result');
+  if (res.success && res.data?.schemes) {
+    box.innerHTML = `<div class="schemes-grid">${res.data.schemes.map(s => `
+      <div class="scheme-card">
+        <div class="scheme-name">🏛️ ${s.name}</div>
+        <div class="scheme-ministry">${s.ministry}</div>
+        <div class="scheme-benefit" style="margin-bottom:0.5rem">${s.benefit}</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.4rem">✅ ${s.eligibility}</div>
+        <div style="font-size:0.82rem;font-weight:600;color:var(--leaf)">📝 ${s.how_to_apply}</div>
+      </div>`).join('')}</div>`;
+  } else {
+    box.innerHTML = `<pre style="font-size:0.85rem">${res.data?.raw||'No schemes found'}</pre>`;
+  }
+}
+</script>
+</body>
+</html>
