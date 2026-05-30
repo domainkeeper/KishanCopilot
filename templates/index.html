@@ -3,33 +3,135 @@
 <head>
     <title>Kishan Copilot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-    <h1>Kishan Copilot</h1>
+<section class="hero">
 
-    <p>AI-powered smart farming assistant for farmers.</p>
+    <div class="hero-text">
+        <h1>Kishan Copilot</h1>
+
+        <p>
+            Smart AI farming assistant helping farmers with
+            weather forecasts, crop recommendations,
+            market insights, and multilingual voice support.
+        </p>
+
+        <button>Explore Features</button>
+    </div>
+
+</section>
 
     <div class="card">
-        <h2>Weather Report</h2>
-        <p>Temperature: 34°C</p>
-        <p>Rain Chances: 20%</p>
+        <h2><i class="fa-solid fa-cloud"></i> Weather Report</h2>
+        <div class="weather-grid">
+
+<div class="weather-box">
+<h3>Temperature</h3>
+<p>34°C</p>
+</div>
+
+<div class="weather-box">
+<h3>Humidity</h3>
+<p>60%</p>
+</div>
+
+<div class="weather-box">
+<h3>Rainfall</h3>
+<p>20%</p>
+</div>
+
+</div>
     </div>
 
     <div class="card">
-        <h2>Crop Advisory</h2>
+        <h2><i class="fa-solid fa-seedling"></i> Crop Advisory</h2>
         <p>Recommended Crop: Wheat</p>
         <p>Best Sowing Month: November</p>
     </div>
 
     <div class="card">
-        <h2>Disease Detection</h2>
+        <h2><i class="fa-solid fa-bug"></i> Disease Detection</h2>
         <p>Leaf appears healthy.</p>
     </div>
 
+    <div class="card">
+
+<h2>Crop Recommendation</h2>
+
+<select id="cropSelect" onchange="changeCrop()">
+    <option>Wheat</option>
+    <option>Rice</option>
+    <option>Sugarcane</option>
+</select>
+
+<p id="cropInfo">
+    Best sowing season: November
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>Disease Detection</h2>
+
+<input type="file">
+
+<button onclick="predictDisease()">
+Check Disease
+</button>
+
+<p id="result"></p>
+
+</div>
+
+
+
+
     <button onclick="voice()">Voice Assistant</button>
+    <footer>
+
+<p>
+Kishan Copilot © 2026 |
+Built for CyphersNova Hackathon
+</p>
+
+</footer>
 
     <script>
+
+        function predictDisease() {
+
+document.getElementById("result")
+.innerHTML =
+"Possible Leaf Blight detected. Recommended treatment: Organic fungicide.";
+
+}
+
+function changeCrop() {
+
+    let crop =
+    document.getElementById("cropSelect").value;
+
+    let info =
+    document.getElementById("cropInfo");
+
+    if(crop === "Wheat") {
+        info.innerHTML =
+        "Best sowing season: November";
+    }
+
+    else if(crop === "Rice") {
+        info.innerHTML =
+        "Requires high rainfall and warm climate.";
+    }
+
+    else {
+        info.innerHTML =
+        "Suitable for tropical regions.";
+    }
+}
         function voice() {
             alert("Voice Assistant Coming Soon");
         }
